@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException, status, Depends
 from models import PostCreate, Post, PostUpdate
-from database import engine, init_db, get_sesssion
+from database import init_db, get_sesssion
 from sqlmodel import select, Session
 from contextlib import asynccontextmanager
 
