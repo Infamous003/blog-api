@@ -15,4 +15,5 @@ class PostCreate(BaseModel):
     description: str
 
 class PostUpdate(BaseModel):
-    pass
+    title: str | None = None
+    description: str | None = None
