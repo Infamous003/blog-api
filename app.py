@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException, status, Depends
-from models import PostCreate, Post, PostUpdate
+from models import PostCreate, Post, PostUpdate, PostPublic
 from database import init_db, get_sesssion
 from sqlmodel import select, Session
 from contextlib import asynccontextmanager
@@ -24,7 +24,9 @@ app = FastAPI(
 def root():
     return {"message": "Hello World!"}
 
-@app.get("/posts")
+@app.get("/posts",
+         response_model=list[PostPublic],
+         status_code=status.HTTP_200_OK)
 def get_posts(session: Session = Depends(get_sesssion)):
     
     query = select(Post)
@@ -35,7 +37,9 @@ def get_posts(session: Session = Depends(get_sesssion)):
     return posts
 
 
-@app.get("/posts/{id}")
+@app.get("/posts/{id}",
+         response_model=PostPublic,
+         status_code=status.HTTP_200_OK)
 def get_posts(id: int, session: Session = Depends(get_sesssion)):
     query = select(Post).where(Post.id == id)
     post_found = session.exec(query).one_or_none()
@@ -44,7 +48,9 @@ def get_posts(id: int, session: Session = Depends(get_sesssion)):
     return post_found
 
 
-@app.post("/posts")
+@app.post("/posts",
+          response_model=PostPublic,
+          status_code=status.HTTP_201_CREATED)
 def create_posts(post: PostCreate, session: Session = Depends(get_sesssion)):
     # with Session(engine) as session:
     new_post = Post(**post.model_dump())
@@ -54,7 +60,7 @@ def create_posts(post: PostCreate, session: Session = Depends(get_sesssion)):
     return new_post
 
 
-@app.put("/posts/{id}")
+@app.put("/posts/{id}", response_model=PostPublic, status_code=status.HTTP_200_OK)
 def update_posts(id: int, post: PostUpdate, session: Session = Depends(get_sesssion)):
     query = select(Post).where(Post.id == id)
     post_found = session.exec(query).one_or_none()
@@ -70,7 +76,8 @@ def update_posts(id: int, post: PostUpdate, session: Session = Depends(get_sesss
     session.refresh(post_found)
     return post_found
 
-@app.delete("/posts/{id}")
+@app.delete("/posts/{id}",
+            status_code=status.HTTP_204_NO_CONTENT)
 def delete_posts(id: int, session: Session = Depends(get_sesssion)):
 
     query = select(Post).where(Post.id == id)
@@ -81,4 +88,3 @@ def delete_posts(id: int, session: Session = Depends(get_sesssion)):
 
     session.delete(post_found)
     session.commit()
-    return {'message': 'Post successfully deleted'}
