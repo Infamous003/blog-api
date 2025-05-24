@@ -8,7 +8,9 @@ class Post(SQLModel, table=True):
     description: str = Field(nullable=False, max_length=1024)
 
 class PostPublic(BaseModel):
-    pass
+    id: int
+    title: str
+    description: str
 
 class PostCreate(BaseModel):
     title: str
