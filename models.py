@@ -19,3 +19,22 @@ class PostCreate(BaseModel):
 class PostUpdate(BaseModel):
     title: str | None = None
     description: str | None = None
+
+# User models
+
+class User(SQLModel, table=True):
+    __tablename__ = "users"
+    id: int | None = Field(default=None, primary_key=True)
+    username: str = Field(max_length=16, nullable=False, unique=True)
+    password: str = Field(max_length=32, min_length=4, nullable=False, unique=False)
+
+class UserCreate(BaseModel):
+    username: str
+    password: str
+
+class UserUpdate(UserCreate):
+    pass
+
+class UserPublic(BaseModel):
+    id: int
+    username: str
