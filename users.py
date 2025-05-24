@@ -40,3 +40,15 @@ def update_user(id: int, user: UserUpdate, session: Session = Depends(get_sesssi
     session.refresh(user_found)
     return user_found
 
+@router.delete("/{id}",
+               status_code=status.HTTP_204_NO_CONTENT)
+def delete_user(id: int, session: Session = Depends(get_sesssion)):
+    query = select(User).where(User.id == id)
+
+    user_found = session.exec(query).one_or_none()
+
+    if user_found is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    else:
+        session.delete(user_found)
+        session.commit()
