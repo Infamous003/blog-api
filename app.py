@@ -1,7 +1,5 @@
-from fastapi import FastAPI, HTTPException, status, Depends
-from models import PostCreate, Post, PostUpdate, PostPublic
-from database import init_db, get_sesssion
-from sqlmodel import select, Session
+from fastapi import FastAPI
+from database import init_db
 from contextlib import asynccontextmanager
 import posts
 
