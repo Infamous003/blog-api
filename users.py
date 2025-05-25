@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, status, HTTPException
 from sqlmodel import Session, select
 from database import get_sesssion
 from models import UserCreate, UserUpdate, User, UserPublic
+from utils import get_password_hash
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -17,6 +18,7 @@ def create_user(user: UserCreate, session: Session = Depends(get_sesssion)):
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail='Username taken')
     else:
         new_user = User(**user.model_dump())
+        new_user.password = get_password_hash(user.password)
         session.add(new_user)
         session.commit()
         session.refresh(new_user)
