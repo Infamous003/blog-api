@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, status, HTTPException
 from sqlmodel import Session, select
-from database import get_sesssion
+from database import get_session
 from models import UserCreate, UserUpdate, User, UserPublic
 from utils import get_password_hash
 
@@ -10,7 +10,7 @@ router = APIRouter(prefix="/users", tags=["Users"])
 @router.post("/",
              response_model=UserPublic,
              status_code=status.HTTP_201_CREATED)
-def create_user(user: UserCreate, session: Session = Depends(get_sesssion)):
+def create_user(user: UserCreate, session: Session = Depends(get_session)):
     query = select(User).where(User.username == user.username)
     user_found = session.exec(query).one_or_none()
 
@@ -27,7 +27,7 @@ def create_user(user: UserCreate, session: Session = Depends(get_sesssion)):
 @router.put("/{id}",
             response_model=UserPublic,
             status_code=status.HTTP_200_OK)
-def update_user(id: int, user: UserUpdate, session: Session = Depends(get_sesssion)):
+def update_user(id: int, user: UserUpdate, session: Session = Depends(get_session)):
     query = select(User).where(User.id == id)
     user_found = session.exec(query).one_or_none()
 
@@ -44,7 +44,7 @@ def update_user(id: int, user: UserUpdate, session: Session = Depends(get_sesssi
 
 @router.delete("/{id}",
                status_code=status.HTTP_204_NO_CONTENT)
-def delete_user(id: int, session: Session = Depends(get_sesssion)):
+def delete_user(id: int, session: Session = Depends(get_session)):
     query = select(User).where(User.id == id)
 
     user_found = session.exec(query).one_or_none()

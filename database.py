@@ -10,6 +10,6 @@ def init_db():
 
 # This function enables us to use Depends and not repeat code by creating
 # a session again and agin for each db access
-def get_sesssion():
+def get_session():
     with Session(engine) as session:
         yield session
