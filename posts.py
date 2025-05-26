@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, status, HTTPException
-from models import Post, PostPublic, PostCreate, PostUpdate
+from models import Post, PostPublic, PostCreate, PostUpdate, User
 from sqlmodel import Session, select
 from database import get_session
+from auth import get_current_user
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
 
@@ -32,8 +33,12 @@ def get_posts(id: int, session: Session = Depends(get_session)):
 @router.post("/",
           response_model=PostPublic,
           status_code=status.HTTP_201_CREATED)
-def create_posts(post: PostCreate, session: Session = Depends(get_session)):
+def create_posts(post: PostCreate,
+                 get_current_user: User = Depends(get_current_user),
+                 session: Session = Depends(get_session)):
+    user_id = get_current_user.id
     new_post = Post(**post.model_dump())
+    new_post.user_id = user_id
     session.add(new_post)
     session.commit()
     session.refresh(new_post)

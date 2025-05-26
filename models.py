@@ -7,7 +7,7 @@ class Post(SQLModel, table=True):
     title: str = Field(nullable=False, max_length=64)
     description: str = Field(nullable=False, max_length=1024)
 
-    user_id: int = Field(foreign_key="users.id")
+    user_id: int | None = Field(foreign_key="users.id")
     user: list["User"] = Relationship(back_populates="post")
 
 class PostPublic(BaseModel):
@@ -19,7 +19,6 @@ class PostPublic(BaseModel):
 class PostCreate(BaseModel):
     title: str
     description: str
-    user_id: int
 
 class PostUpdate(BaseModel):
     title: str | None = None
