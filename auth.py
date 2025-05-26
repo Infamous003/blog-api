@@ -5,7 +5,7 @@ import jwt
 from jwt.exceptions import InvalidTokenError
 from utils import authenticate_user, create_access_token, get_user, get_password_hash
 from sqlmodel import Session, select
-from database import get_sesssion
+from database import get_session
 
 SECRET_KEY = "72a29ca393337573268c0c33b2df524037a40ce0d7b286ef0114d3a83f08e8d2"
 ALGORITHM = "HS256"
@@ -35,7 +35,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
 @router.post("/register",
              response_model=UserPublic,
              status_code=status.HTTP_201_CREATED)
-def register(user_credentials: UserCreate, session: Session = Depends(get_sesssion)):
+def register(user_credentials: UserCreate, session: Session = Depends(get_session)):
     query = select(User).where(User.username == user_credentials.username)
     user = session.exec(query).one_or_none()
 
