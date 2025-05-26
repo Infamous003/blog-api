@@ -46,13 +46,19 @@ def create_posts(post: PostCreate,
 
 
 @router.put("/{id}", response_model=PostPublic, status_code=status.HTTP_200_OK)
-def update_posts(id: int, post: PostUpdate, session: Session = Depends(get_session)):
+def update_posts(id: int,
+                 post: PostUpdate,
+                 get_current_user: User = Depends(get_current_user),
+                 session: Session = Depends(get_session)):
     query = select(Post).where(Post.id == id)
     post_found = session.exec(query).one_or_none()
 
     if post_found is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
-    
+
+    if post_found.user_id != get_current_user.id:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized access. You don't have to permission to modify/delete this post")
+
     if post.title: post_found.title = post.title
     if post.description: post_found.description = post.description
 
@@ -63,13 +69,18 @@ def update_posts(id: int, post: PostUpdate, session: Session = Depends(get_sessi
 
 @router.delete("/{id}",
             status_code=status.HTTP_204_NO_CONTENT)
-def delete_posts(id: int, session: Session = Depends(get_session)):
-
+def delete_posts(id: int,
+                 get_current_user: User = Depends(get_current_user),
+                 session: Session = Depends(get_session)):
+    
     query = select(Post).where(Post.id == id)
     post_found = session.exec(query).one_or_none()
 
     if post_found is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
+
+    if post_found.user_id != get_current_user.id:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized access. You don't have to permission to modify/delete this post")
 
     session.delete(post_found)
     session.commit()
