@@ -1,11 +1,14 @@
 from pydantic import BaseModel
-from sqlmodel import SQLModel, Field, Relationship
+from sqlmodel import SQLModel, Field, Relationship, DateTime
+from datetime import datetime
 
 class Post(SQLModel, table=True):
     __tablename__ = "posts"
     id: int | None = Field(default=None, primary_key=True)
     title: str = Field(nullable=False, max_length=64)
-    description: str = Field(nullable=False, max_length=1024)
+    subtitle: str | None = Field(max_length=128)
+    content: str = Field(nullable=False, max_length=1024)
+    created_at: datetime = Field(default_factory=datetime.now)
 
     user_id: int | None = Field(foreign_key="users.id")
     user: list["User"] = Relationship(back_populates="post")
@@ -13,16 +16,20 @@ class Post(SQLModel, table=True):
 class PostPublic(BaseModel):
     id: int
     title: str
-    description: str
+    subtitle: str
+    content: str
     user_id: int
 
 class PostCreate(BaseModel):
     title: str
-    description: str
+    subtitle: str | None = None
+    content: str
+
 
 class PostUpdate(BaseModel):
     title: str | None = None
-    description: str | None = None
+    content: str | None = None
+    subtitle: str | None = None
 
 # User models
 

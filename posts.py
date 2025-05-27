@@ -60,7 +60,8 @@ def update_posts(id: int,
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized access. You don't have to permission to modify/delete this post")
 
     if post.title: post_found.title = post.title
-    if post.description: post_found.description = post.description
+    if post.content: post_found.content = post.content
+    if post.subtitle: post_found.subtitle = post.subtitle
 
     session.add(post_found)
     session.commit()
