@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 from database import init_db
 from contextlib import asynccontextmanager
-import posts
-import users
-import auth
+import routes.posts as posts
+import routes.users as users
+import routes.auth as auth
 
 # This piece of code will make sure that the db is created before we start making requests
 @asynccontextmanager
@@ -17,7 +17,6 @@ app = FastAPI(
     lifespan=lifespan)
 
 app.include_router(posts.router)
-app.include_router(users.router)
 app.include_router(auth.router)
 
 @app.get("/")

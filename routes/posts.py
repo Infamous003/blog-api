@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, status, HTTPException
 from models import Post, PostPublic, PostCreate, PostUpdate, User
 from sqlmodel import Session, select
 from database import get_session
-from auth import get_current_user
+from routes.auth import get_current_user
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
 
