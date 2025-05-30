@@ -2,7 +2,7 @@ from passlib.context import CryptContext
 from fastapi import HTTPException, status, Depends
 from sqlmodel import Session, select
 from database import engine
-from models import User, Post, PostPublic
+from models import User, Post, PostPublic, CommentPublic, Comment
 from datetime import datetime, timedelta, timezone
 import jwt
 
@@ -66,3 +66,14 @@ def get_post_or_404(id: int) -> PostPublic:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
 
         return post_found
+
+def get_comment_or_404(comment_id: int, post_id) -> CommentPublic:
+    with Session(engine) as session:
+        comment = session.exec(
+            select(Comment).where(Comment.id == comment_id, Comment.post_id == post_id)
+        ).one_or_none()
+
+        if comment is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Comment not found")
+        
+        return comment

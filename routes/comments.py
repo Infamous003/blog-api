@@ -3,7 +3,7 @@ from sqlmodel import select, Session
 from database import get_session
 from models import User, Comment, CommentCreate, CommentPublic, CommentUpdate
 from .auth import get_current_user
-from utils import get_post_or_404
+from utils import get_post_or_404, get_comment_or_404
 
 router = APIRouter(tags=["Comments"])
 
@@ -58,13 +58,9 @@ def update_comment(post_id: int,
                    comment: CommentUpdate,
                    current_user: User = Depends(get_current_user),
                    session: Session = Depends(get_session)):
-    
-    query = select(Comment).where(Comment.id == comment_id,
-                                  Comment.post_id == post_id)
-    comment_found = session.exec(query).one_or_none()
-    if comment_found is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Comment not found")
-    
+
+    comment_found = get_comment_or_404(comment_id, post_id)
+
     if comment_found.user_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You do not have the permission to update this comment")
 
@@ -73,7 +69,7 @@ def update_comment(post_id: int,
     session.add(comment_found)
     session.commit()
     session.refresh(comment_found)
-    return comment_found   
+    return comment_found
     
 
 @router.delete("/posts/{post_id}/comments/{comment_id}",
@@ -83,9 +79,7 @@ def delete_comment(post_id: int,
                    current_user: User = Depends(get_current_user),
                    session: Session = Depends(get_session)):
     
-    query = select(Comment).where(Comment.id == comment_id,
-                                  Comment.post_id == post_id)
-    comment_found = session.exec(query).one_or_none()
+    comment_found = get_comment_or_404(comment_id, post_id)
 
     if comment_found is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Comment not found")
