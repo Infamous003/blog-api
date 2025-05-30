@@ -14,6 +14,7 @@ class Post(SQLModel, table=True):
     user: list["User"] = Relationship(back_populates="post")
 
     comment: list["Comment"] = Relationship(back_populates="post")
+    like: list["Like"] = Relationship(back_populates="post")
 
 class PostPublic(BaseModel):
     id: int
@@ -43,6 +44,7 @@ class User(SQLModel, table=True):
 
     post: Post = Relationship(back_populates="user") # the value of back_populates is the relationship name, not table name
     comment: list["Comment"] = Relationship(back_populates="user")
+    like: list["Like"] = Relationship(back_populates="user")
 
 class UserCreate(BaseModel):
     username: str
@@ -78,6 +80,20 @@ class CommentPublic(BaseModel):
     id: int
     comment_text: str
     user_id: int
+
+
+# Like model
+
+class Like(SQLModel, table=True):
+    __tablename__ = "likes"
+
+    id: int | None = Field(default=None, primary_key=True)
+
+    user_id: int | None = Field(foreign_key="users.id", ondelete="CASCADE")
+    post_id: int = Field(foreign_key="posts.id", ondelete="CASCADE")
+
+    user: User = Relationship(back_populates="like")
+    post: Post = Relationship(back_populates="like")
 
 
 # Authentication models
