@@ -13,20 +13,20 @@ This is a RESTful API for a blogging platform, with authentication, posts, comme
 ### Installation
 
 - Clone the repo and cd into the project directory
-    ```bash
-        git clone https://github.com/Infamous003/blog-api.git
-    ```
+```bash
+git clone https://github.com/Infamous003/blog-api.git
+```
 - Create and activate a virtual environment
-    ```bash
-        python3 -m venv .venv
-        source .venv/bin/activate
-    ```
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
 - Install the dependencies
-    ```bash
-        pip install -r requirements.txt
-    ```
+```bash
+pip install -r requirements.txt
+```
 - Start uvicorn server
-    ```bash
-        uvirorn app:app --reload
-    ```
+```bash
+uvirorn app:app --reload
+```
 - Go to http://127.0.0.1:8000/docs
