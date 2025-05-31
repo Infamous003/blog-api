@@ -13,9 +13,6 @@ def get_posts(session: Session = Depends(get_session)):
     
     query = select(Post)
     posts = session.exec(query).fetchall()
-
-    if not posts:
-        return {'message': 'Looks so empty...'}
     return posts
 
 
