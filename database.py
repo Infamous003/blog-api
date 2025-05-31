@@ -1,22 +1,6 @@
 from sqlmodel import SQLModel, create_engine, Session
-import os
-from dotenv import load_dotenv
+DATABASE_URL="postgresql://fastapi:BcaZDxm1OmH9QJBq5kSXzxDQruJerr97@dpg-d0sr5l49c44c73ff04mg-a.oregon-postgres.render.com/fastapi_rsus"
 
-# This loads the env variables from .env file
-load_dotenv()
-
-USERNAME = os.getenv("DB_USERNAME")
-PASSWORD = os.getenv("DB_PASSWORD")
-DB_NAME = os.getenv("DB_NAME")
-HOST = os.getenv("HOST")
-PORT = os.getenv("PORT")
-
-print(USERNAME, PASSWORD)
-
-# DATABASE_URL = "postgresql://username:password@host:port/database_name"
-
-DATABASE_URL = f"postgresql://{USERNAME}:{PASSWORD}@{HOST}:{PORT}/fastapi"
-print(DATABASE_URL, "------------------------------")
 engine = create_engine(DATABASE_URL, echo=True)
 
 def init_db():
