@@ -1,6 +1,9 @@
 # blog-api
 This is a RESTful API for a blogging platform, with authentication, posts, comments, and likes.
 
+Live preview: https://blog-api-p2dq.onrender.com/docs
+A user with username ```batman``` and password ```batman123``` is already created. Feel free to use it
+
 ### Features
 - JWT Auth: For registering and logging in
 - Protected routes: You need an access token for certain routes
