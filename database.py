@@ -16,7 +16,7 @@ print(USERNAME, PASSWORD)
 # DATABASE_URL = "postgresql://username:password@host:port/database_name"
 
 DATABASE_URL = f"postgresql://{USERNAME}:{PASSWORD}@{HOST}:{PORT}/fastapi"
-print(DATABASE_URL, "------------------------------")
+# print(DATABASE_URL, "------------------------------")
 engine = create_engine(DATABASE_URL, echo=True)
 
 def init_db():

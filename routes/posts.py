@@ -1,22 +1,40 @@
-from fastapi import APIRouter, Depends, status, HTTPException
+from fastapi import APIRouter, Depends, status, HTTPException, Request
 from models import Post, PostPublic, PostCreate, PostUpdate, User
 from sqlmodel import Session, select
 from database import get_session
 from routes.auth import get_current_user
+import json
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
 
 @router.get("/",
          response_model=list[PostPublic],
          status_code=status.HTTP_200_OK)
-def get_posts(session: Session = Depends(get_session)):
-    
-    query = select(Post)
-    posts = session.exec(query).fetchall()
+async def get_posts(request: Request, session: Session = Depends(get_session)):
+    redis = request.app.state.redis
 
-    if not posts:
-        return {'message': 'Looks so empty...'}
-    return posts
+    cache = None
+    cache = await redis.get("posts")
+
+    if cache is not None:
+        decoded = cache.decode()
+        posts = json.loads(decoded)
+        print("Cache hit!")
+        return posts
+    else:
+        query = select(Post)
+        posts = session.exec(query).fetchall()
+
+        post_dicts = [post.model_dump(mode="json") for post in posts]
+        # mode=json helps us convert dattime objects to strings. without it
+        # the datetime objs are not json serializable!
+
+        await redis.set("posts", json.dumps(post_dicts), ex=1800) #cache expires after 30 minutes
+
+        if not posts:
+            return {'message': 'Looks so empty...'}
+        print("Cache miss!")
+        return posts
 
 
 @router.get("/{id}",

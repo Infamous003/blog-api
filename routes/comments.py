@@ -1,32 +1,61 @@
-from fastapi import HTTPException, status, Depends, APIRouter
+from fastapi import HTTPException, status, Depends, APIRouter, Request
 from sqlmodel import select, Session
 from database import get_session
 from models import User, Comment, CommentCreate, CommentPublic, CommentUpdate
 from .auth import get_current_user
 from utils import get_post_or_404, get_comment_or_404
+import json
 
 router = APIRouter(tags=["Comments"])
 
 @router.get("/comments",
             status_code=status.HTTP_200_OK,
             response_model=list[CommentPublic])
-def get_comments(session: Session = Depends(get_session)):
-    query = select(Comment)
-    comments = session.exec(query).fetchall()
+async def get_comments(request: Request,
+                 session: Session = Depends(get_session)):
+    
+    redis = request.app.state.redis
 
-    return comments
+    cache = None
+    cache = await redis.get("comments")
+
+    if cache is not None:
+        decoded = cache.decode()
+        comments = json.loads(decoded)
+        return comments
+    else:
+        query = select(Comment)
+        comments = session.exec(query).fetchall()
+
+        comment_dicts = [comment.model_dump(mode="json") for comment in comments]
+        await redis.set("comments", json.dumps(comment_dicts), ex=1800)
+        return comments
 
 
 @router.get("/posts/{post_id}/comments",
             status_code=status.HTTP_200_OK,
             response_model=list[CommentPublic])
-def get_comments_for_post(post_id: int,
-                 session: Session = Depends(get_session)):
+async def get_comments_for_post(post_id: int,
+                            request: Request,
+                            session: Session = Depends(get_session)):
     post = get_post_or_404(post_id)
+    redis = request.app.state.redis
 
-    query = select(Comment).where(Comment.post_id == post.id)
-    comments = session.exec(query).fetchall()
-    return comments
+    cache = None
+    cache = await redis.get("comments_for_post")
+
+    if cache is not None:
+        decoded = cache.decode()
+        comments = json.loads(decoded)
+        print(comments)
+        return comments
+    else:
+        query = select(Comment).where(Comment.post_id == post.id)
+        comments = session.exec(query).fetchall()
+        
+        comment_dicts = [comment.model_dump(mode="json") for comment in comments]
+        await redis.set("comments_for_post", json.dumps(comment_dicts), ex=1800)
+        return comments
 
 
 @router.post("/posts/{post_id}/comments",

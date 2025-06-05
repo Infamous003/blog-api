@@ -6,12 +6,15 @@ import routes.posts as posts
 import routes.auth as auth
 import routes.comments as comments
 import routes.likes as likes
+from redis import asyncio
 
 # This piece of code will make sure that the db is created before we start making requests
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()
+    app.state.redis = asyncio.Redis(host="localhost", port=6379)
     yield
+    await app.state.redis.close()
 
 app = FastAPI(
     title="Blog API",
