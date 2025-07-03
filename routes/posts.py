@@ -81,10 +81,12 @@ async def create_posts(post: PostCreate,
 
 
 @router.put("/{id}", response_model=PostPublic, status_code=status.HTTP_200_OK)
-def update_posts(id: int,
+async def update_posts(id: int,
                  post: PostUpdate,
+                 request: Request,
                  get_current_user: User = Depends(get_current_user),
                  session: Session = Depends(get_session)):
+    redis = request.app.state.redis
     query = select(Post).where(Post.id == id)
     post_found = session.exec(query).one_or_none()
 
@@ -101,6 +103,27 @@ def update_posts(id: int,
     session.add(post_found)
     session.commit()
     session.refresh(post_found)
+
+    cache = None
+    cache = await redis.get("posts")
+
+    if cache is None:
+        cached_posts = []
+    else:
+        decoded = cache.decode()
+        cached_posts = json.loads(decoded)
+    
+    # Unlike creating a new post, we dont have to append it. Insead we find the post to update and update it
+    for i, cached_post in enumerate(cached_posts):
+        if cached_post["id"] == id and cached_post["user_id"] == get_current_user.id:
+            updated_post = post_found.model_dump(mode="json")
+            cached_posts[i] = updated_post
+            print(cached_posts)
+            break
+
+    post_dicts = [post for post in cached_posts]
+    await redis.set("posts", json.dumps(post_dicts), ex=1800)
+
     return post_found
 
 @router.delete("/{id}",
