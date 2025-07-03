@@ -49,15 +49,34 @@ def get_posts(id: int, session: Session = Depends(get_session)):
 @router.post("/",
           response_model=PostPublic,
           status_code=status.HTTP_201_CREATED)
-def create_posts(post: PostCreate,
+async def create_posts(post: PostCreate,
+                 request: Request,
                  get_current_user: User = Depends(get_current_user),
                  session: Session = Depends(get_session)):
+    redis = request.app.state.redis
+
     user_id = get_current_user.id
     new_post = Post(**post.model_dump())
     new_post.user_id = user_id
+
     session.add(new_post)
     session.commit()
     session.refresh(new_post)
+
+    # We are updating the cache with the new post here
+    cache = None
+    cache = await redis.get("posts")
+
+    if cache is None:
+        cached_posts = []
+    else:
+        decoded = cache.decode()
+        cached_posts = json.loads(decoded)
+    
+    cached_posts.append(new_post.model_dump(mode="json"))
+    post_dicts = [post for post in cached_posts]
+    await redis.set("posts", json.dumps(post_dicts), ex=1800)
+
     return new_post
 
 
