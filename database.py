@@ -11,14 +11,11 @@ DB_NAME = os.getenv("DB_NAME")
 HOST = os.getenv("HOST")
 PORT = os.getenv("PORT")
 
-print(USERNAME, PASSWORD)
-
 # DATABASE_URL = "postgresql://username:password@host:port/database_name"
+DATABASE_URL = f"postgresql://{USERNAME}:{PASSWORD}@{HOST}:{PORT}/{DB_NAME}"
 
-DATABASE_URL = f"postgresql://{USERNAME}:{PASSWORD}@{HOST}:{PORT}/fastapi"
-# print(DATABASE_URL, "------------------------------")
+
 engine = create_engine(DATABASE_URL, echo=True)
-
 def init_db():
     SQLModel.metadata.create_all(engine)
 
