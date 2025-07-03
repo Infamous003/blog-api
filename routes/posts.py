@@ -24,15 +24,13 @@ async def get_posts(request: Request, session: Session = Depends(get_session)):
     else:
         query = select(Post)
         posts = session.exec(query).fetchall()
-
+        if not posts:
+            return []
         post_dicts = [post.model_dump(mode="json") for post in posts]
         # mode=json helps us convert dattime objects to strings. without it
         # the datetime objs are not json serializable!
-
+        
         await redis.set("posts", json.dumps(post_dicts), ex=1800) #cache expires after 30 minutes
-
-        if not posts:
-            return {'message': 'Looks so empty...'}
         print("Cache miss!")
         return posts
 
