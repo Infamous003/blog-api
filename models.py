@@ -10,6 +10,7 @@ class Post(SQLModel, table=True):
     content: str = Field(nullable=False, max_length=1024)
     created_at: datetime = Field(default_factory=datetime.now)
 
+    username: str = Field(nullable=False)
     user_id: int | None = Field(foreign_key="users.id", ondelete="CASCADE")
     user: list["User"] = Relationship(back_populates="post")
 
@@ -22,6 +23,7 @@ class PostPublic(BaseModel):
     subtitle: str
     content: str
     user_id: int
+    username: str
 
 class PostCreate(BaseModel):
     title: str

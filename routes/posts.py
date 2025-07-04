@@ -56,8 +56,10 @@ async def create_posts(post: PostCreate,
     redis = request.app.state.redis
 
     user_id = get_current_user.id
+    username = get_current_user.username
     new_post = Post(**post.model_dump())
     new_post.user_id = user_id
+    new_post.username = username
 
     session.add(new_post)
     session.commit()
