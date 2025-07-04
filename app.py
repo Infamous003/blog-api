@@ -7,6 +7,7 @@ import routes.auth as auth
 import routes.comments as comments
 import routes.likes as likes
 from redis import asyncio
+from fastapi.middleware.cors import CORSMiddleware
 
 # This piece of code will make sure that the db is created before we start making requests
 @asynccontextmanager
@@ -25,6 +26,14 @@ app.include_router(posts.router)
 app.include_router(auth.router)
 app.include_router(comments.router)
 app.include_router(likes.router)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 def root():
