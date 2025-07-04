@@ -128,10 +128,11 @@ async def update_posts(id: int,
 
 @router.delete("/{id}",
             status_code=status.HTTP_204_NO_CONTENT)
-def delete_posts(id: int,
+async def delete_posts(id: int,
+                 request: Request,
                  get_current_user: User = Depends(get_current_user),
                  session: Session = Depends(get_session)):
-    
+    redis = request.app.state.redis
     query = select(Post).where(Post.id == id)
     post_found = session.exec(query).one_or_none()
 
@@ -140,6 +141,22 @@ def delete_posts(id: int,
 
     if post_found.user_id != get_current_user.id:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized access. You don't have to permission to modify/delete this post")
-
     session.delete(post_found)
     session.commit()
+
+    cache = None
+    cache = await redis.get("posts")
+
+    if cache is None:
+        cached_posts = []
+    else:
+        decoded = cache.decode()
+        cached_posts = json.loads(decoded)
+    
+    for i, cached_post in enumerate(cached_posts):
+        if cached_post["id"] == id and cached_post["user_id"] == get_current_user.id:
+            cached_posts.pop(i)
+            print(cached_posts)
+            break
+    post_dicts = [post for post in cached_posts]
+    await redis.set("posts", json.dumps(post_dicts), ex=1800)
