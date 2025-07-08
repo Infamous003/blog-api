@@ -33,6 +33,17 @@ async def get_posts(request: Request, session: Session = Depends(get_session)):
         await redis.set("posts", json.dumps(post_dicts), ex=1800) #cache expires after 30 minutes
         print("Cache miss!")
         return posts
+    
+@router.get("/my-posts",
+            response_model=list[PostPublic],
+            status_code=status.HTTP_200_OK)
+async def get_my_posts(get_current_user: User = Depends(get_current_user),
+                       session: Session = Depends(get_session)):
+    my_posts = session.exec(
+    select(Post).where(Post.user_id == get_current_user.id)
+    ).fetchall()
+
+    return my_posts
 
 
 @router.get("/{id}",
