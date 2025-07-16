@@ -1,13 +1,14 @@
 from pydantic import BaseModel
-from sqlmodel import SQLModel, Field, Relationship, DateTime
+from sqlmodel import SQLModel, Field, Relationship
 from datetime import datetime
+from sqlalchemy import Column, Text
 
 class Post(SQLModel, table=True):
     __tablename__ = "posts"
     id: int | None = Field(default=None, primary_key=True)
     title: str = Field(nullable=False, max_length=64)
     subtitle: str | None = Field(max_length=128)
-    content: str = Field(nullable=False, max_length=1024)
+    content: str = Field(sa_column=Column(Text))
     created_at: datetime = Field(default_factory=datetime.now)
 
     username: str = Field(nullable=False)
