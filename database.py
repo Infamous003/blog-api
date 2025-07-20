@@ -1,8 +1,8 @@
 from sqlmodel import SQLModel, create_engine, Session
 import os
 
-# getting the url from render's env variables
-DATABASE_URL = os.getenv("DATABASE_URL")
+# This is the postgres instance url on Render
+DATABASE_URL = "postgresql://blogapi_1cft_user:zXEvft6o6b7FqVZvaqgqzgsaoNuFvfXl@dpg-d1ufdf3uibrs738e7i50-a/blogapi_1cft"
 
 if not DATABASE_URL:
     raise ValueError("DATABASE_URL is not set")

@@ -10,8 +10,8 @@ from redis import asyncio
 from fastapi.middleware.cors import CORSMiddleware
 import os
 
-# Render's env variable has the redis url
-REDIS_URL = os.getenv("REDIS_URL")
+# This url is the redis instance on render
+REDIS_URL = "redis://red-d1ufcvmr433s73emt4d0:6379"
 
 # This piece of code will make sure that the db is created before we start making requests
 @asynccontextmanager
