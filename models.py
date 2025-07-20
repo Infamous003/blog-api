@@ -23,6 +23,7 @@ class PostPublic(BaseModel):
     title: str
     subtitle: str
     content: str
+    created_at: datetime
     user_id: int
     username: str
 
