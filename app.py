@@ -17,9 +17,7 @@ REDIS_PORT = 6379
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()
-    if not REDIS_URL:
-        raise ValueError("REDIS_URL not set")
-    app.state.redis = asyncio.Redis(host=REDIS_HOST, port=REDIS_PORT)
+    app.state.redis = asyncio.Redis(REDIS_HOST, REDIS_PORT)
     yield
     await app.state.redis.close()
 
