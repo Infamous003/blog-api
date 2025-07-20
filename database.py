@@ -1,19 +1,11 @@
 from sqlmodel import SQLModel, create_engine, Session
 import os
-from dotenv import load_dotenv
 
-# This loads the env variables from .env file
-load_dotenv()
+# getting the url from render's env variables
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-USERNAME = os.getenv("DB_USERNAME")
-PASSWORD = os.getenv("DB_PASSWORD")
-DB_NAME = os.getenv("DB_NAME")
-HOST = os.getenv("HOST")
-PORT = os.getenv("PORT")
-
-# DATABASE_URL = "postgresql://username:password@host:port/database_name"
-DATABASE_URL = f"postgresql://{USERNAME}:{PASSWORD}@{HOST}:{PORT}/{DB_NAME}"
-
+if not DATABASE_URL:
+    raise ValueError("DATABASE_URL is not set")
 
 engine = create_engine(DATABASE_URL, echo=True)
 def init_db():

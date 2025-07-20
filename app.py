@@ -9,18 +9,17 @@ import routes.likes as likes
 from redis import asyncio
 from fastapi.middleware.cors import CORSMiddleware
 import os
-from dotenv import load_dotenv
 
-load_dotenv()
-
-REDIS_HOST = os.getenv("REDIS_HOST")
-REDIS_PORT = os.getenv("REDIS_PORT")
+# Render's env variable has the redis url
+REDIS_URL = os.getenv("REDIS_URL")
 
 # This piece of code will make sure that the db is created before we start making requests
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()
-    app.state.redis = asyncio.Redis(host=REDIS_HOST, port=REDIS_PORT)
+    if not REDIS_URL:
+        raise ValueError("REDIS_URL not set")
+    app.state.redis = asyncio.Redis(REDIS_URL, decode_responses=True)
     yield
     await app.state.redis.close()
 
