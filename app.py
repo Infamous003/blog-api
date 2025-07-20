@@ -11,15 +11,15 @@ from fastapi.middleware.cors import CORSMiddleware
 import os
 
 # This url is the redis instance on render
-REDIS_URL = "redis://red-d1ufcvmr433s73emt4d0:6379"
-
+REDIS_HOST = "redis://red-d1ufcvmr433s73emt4d0"
+REDIS_PORT = 6379
 # This piece of code will make sure that the db is created before we start making requests
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()
     if not REDIS_URL:
         raise ValueError("REDIS_URL not set")
-    app.state.redis = asyncio.Redis(REDIS_URL, decode_responses=True)
+    app.state.redis = asyncio.Redis(host=REDIS_HOST, port=REDIS_PORT)
     yield
     await app.state.redis.close()
 
