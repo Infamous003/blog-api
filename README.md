@@ -1,35 +1,31 @@
-# blog-api
-This is a RESTful API for a blogging platform, with authentication, posts, comments, and likes.
+# Blog API
 
-Live preview: https://blog-api-p2dq.onrender.com/docs
-A user with username ```batman``` and password ```batman123``` is already created. Feel free to use it
+This is a **RESTful API** for a blogging platform, featuring user authentication, posts, comments, and likes.
 
-### Features
-- JWT Auth: For registering and logging in
-- Protected routes: You need an access token for certain routes
-- Comments: Write comments under a specific post
-- Likes: Add/Remove a like from a post
+## Live docs
 
-### Tech Stack
-- Python, FastAPI, PostgreSQL, OAuth2 for JWT
+Check out the swagger docs here:
+https://blog-api-1i1j.onrender.com/docs
 
-### Installation
+Or if you prefer a good UI (build with ReactJS and WebTUI):
+https://majestic-croquembouche-a1c89c.netlify.app/
 
-- Clone the repo and cd into the project directory
-```bash
-git clone https://github.com/Infamous003/blog-api.git
-```
-- Create and activate a virtual environment
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-```
-- Install the dependencies
-```bash
-pip install -r requirements.txt
-```
-- Start uvicorn server
-```bash
-uvirorn app:app --reload
-```
-- Go to http://127.0.0.1:8000/docs
+You can log in using the test credentials:
+
+- **Username**: `testuser`  
+- **Password**: `password123`
+
+Or create a new user.
+
+## Features
+
+- **JWT Authentication** - Register and log in using jwt tokens
+- **Protected Routes** - Access posts, comments, and likes only with a valid jwt token
+- **Comments & Likes** - Like/Unlike and post comments under a specific posts
+
+## Tech Stack
+
+- **Python** / **FastAPI**  
+- **PostgreSQL**  
+- **Docker**
+- **JWT Auth**
