@@ -76,20 +76,9 @@ async def create_posts(post: PostCreate,
     session.commit()
     session.refresh(new_post)
 
-    # We are updating the cache with the new post here
-    cache = None
-    cache = await redis.get("posts")
-
-    if cache is None:
-        cached_posts = []
-    else:
-        decoded = cache.decode()
-        cached_posts = json.loads(decoded)
-    
-    cached_posts.append(new_post.model_dump(mode="json"))
-    post_dicts = [post for post in cached_posts]
-    await redis.set("posts", json.dumps(post_dicts), ex=1800)
-
+    # Delete the cache and let it build in the next GET request
+    # This reduces the complexity of having to manually update the cache
+    await redis.delete("posts")
     return new_post
 
 
@@ -117,26 +106,7 @@ async def update_posts(id: int,
     session.commit()
     session.refresh(post_found)
 
-    cache = None
-    cache = await redis.get("posts")
-
-    if cache is None:
-        cached_posts = []
-    else:
-        decoded = cache.decode()
-        cached_posts = json.loads(decoded)
-    
-    # Unlike creating a new post, we dont have to append it. Insead we find the post to update and update it
-    for i, cached_post in enumerate(cached_posts):
-        if cached_post["id"] == id and cached_post["user_id"] == get_current_user.id:
-            updated_post = post_found.model_dump(mode="json")
-            cached_posts[i] = updated_post
-            print(cached_posts)
-            break
-
-    post_dicts = [post for post in cached_posts]
-    await redis.set("posts", json.dumps(post_dicts), ex=1800)
-
+    await redis.delete("posts")
     return post_found
 
 @router.delete("/{id}",
@@ -157,19 +127,4 @@ async def delete_posts(id: int,
     session.delete(post_found)
     session.commit()
 
-    cache = None
-    cache = await redis.get("posts")
-
-    if cache is None:
-        cached_posts = []
-    else:
-        decoded = cache.decode()
-        cached_posts = json.loads(decoded)
-    
-    for i, cached_post in enumerate(cached_posts):
-        if cached_post["id"] == id and cached_post["user_id"] == get_current_user.id:
-            cached_posts.pop(i)
-            print(cached_posts)
-            break
-    post_dicts = [post for post in cached_posts]
-    await redis.set("posts", json.dumps(post_dicts), ex=1800)
+    await redis.delete("posts")

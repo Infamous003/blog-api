@@ -13,10 +13,10 @@ ENV PYTHONPATH=/app
 ENV DB_USERNAME=postgres
 ENV DB_PASSWORD=password123
 ENV DB_NAME=blogapi
-ENV HOST=host.docker.internal
+ENV HOST=postgres
 ENV PORT=5432
 
-ENV REDIS_HOST=host.docker.internal
+ENV REDIS_HOST=redis
 ENV REDIS_PORT=6379
 
 

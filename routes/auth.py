@@ -53,8 +53,8 @@ def register(user_credentials: UserCreate, session: Session = Depends(get_sessio
 @router.post("/login",
              response_model=Token,
              status_code=status.HTTP_200_OK)
-def login(form_data: OAuth2PasswordRequestForm = Depends()):
-    user = authenticate_user(form_data.username, form_data.password)
+def login(form_data: OAuth2PasswordRequestForm = Depends(), session: Session = Depends(get_session)):
+    user = authenticate_user(form_data.username, form_data.password, session)
 
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password")

@@ -30,11 +30,11 @@ def get_user(username: str):
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
         return user
     
-def authenticate_user(username: str, password: str):
+def authenticate_user(username: str, password: str, session: Session):
     user = None
-    with Session(engine) as session:
-        query = select(User).where(User.username == username)
-        user = session.exec(query).one_or_none()
+    
+    query = select(User).where(User.username == username)
+    user = session.exec(query).one_or_none()
 
     if user is None:
         return False

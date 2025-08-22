@@ -28,4 +28,8 @@ Or create a new user.
 - **Python** / **FastAPI**  
 - **PostgreSQL**  
 - **Docker**
+<<<<<<< HEAD
 - **JWT Auth**
+=======
+- **JWT Auth**
+>>>>>>> 27bb1f192ccc409e814388974cb42e5cee775fd5

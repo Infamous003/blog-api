@@ -1,0 +1,33 @@
+version: '3.9'
+
+services:
+  app:
+    build: .
+    ports: 
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      PYTHONPATH: /app
+      DB_USERNAME: postgres
+      DB_PASSWORD: password123
+      DB_NAME: blogapi
+      DB_HOST: postgres
+      DB_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+  
+  postgres:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: blogapi
+
+  redis:
+    image: "redis:latest"
+    ports:
+      - "6379:6379"
