@@ -55,24 +55,24 @@ def create_access_token(user_data: dict):
 
 # Helper functions for Comments
 
-def get_post_or_404(id: int) -> PostPublic:
-    with Session(engine) as session:
-        post_found = session.exec(
-            select(Post).where(Post.id == id)
-        ).one_or_none()
+def get_post_or_404(id: int, session: Session) -> PostPublic:
+    # with Session(engine) as session:
+    post_found = session.exec(
+        select(Post).where(Post.id == id)
+    ).one_or_none()
 
-        if post_found is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
+    if post_found is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
 
-        return post_found
+    return post_found
 
-def get_comment_or_404(comment_id: int, post_id) -> CommentPublic:
-    with Session(engine) as session:
-        comment = session.exec(
-            select(Comment).where(Comment.id == comment_id, Comment.post_id == post_id)
-        ).one_or_none()
+def get_comment_or_404(comment_id: int, post_id, session: Session) -> CommentPublic:
+    # with Session(engine) as session:
+    comment = session.exec(
+        select(Comment).where(Comment.id == comment_id, Comment.post_id == post_id)
+    ).one_or_none()
 
-        if comment is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Comment not found")
-        
-        return comment
+    if comment is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Comment not found")
+    
+    return comment

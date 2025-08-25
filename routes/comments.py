@@ -38,7 +38,7 @@ async def get_comments(request: Request,
 async def get_comments_for_post(post_id: int,
                             request: Request,
                             session: Session = Depends(get_session)):
-    post = get_post_or_404(post_id)
+    post = get_post_or_404(post_id, session)
     redis = request.app.state.redis
 
     cache = None
@@ -66,7 +66,7 @@ def create_comment(post_id: int,
                    current_user: User = Depends(get_current_user),
                    session: Session = Depends(get_session)):
     
-    post = get_post_or_404(post_id)
+    post = get_post_or_404(post_id, session)
     
     new_comment = Comment(**comment.model_dump())
     new_comment.post_id = post.id
@@ -88,7 +88,7 @@ def update_comment(post_id: int,
                    current_user: User = Depends(get_current_user),
                    session: Session = Depends(get_session)):
 
-    comment_found = get_comment_or_404(comment_id, post_id)
+    comment_found = get_comment_or_404(comment_id, post_id, session)
 
     if comment_found.user_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You do not have the permission to update this comment")
@@ -102,13 +102,13 @@ def update_comment(post_id: int,
     
 
 @router.delete("/posts/{post_id}/comments/{comment_id}",
-               status_code=status.HTTP_200_OK)
+               status_code=status.HTTP_204_NO_CONTENT)
 def delete_comment(post_id: int,
                    comment_id: int,
                    current_user: User = Depends(get_current_user),
                    session: Session = Depends(get_session)):
     
-    comment_found = get_comment_or_404(comment_id, post_id)
+    comment_found = get_comment_or_404(comment_id, post_id, session)
 
     if comment_found is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Comment not found")

@@ -69,6 +69,14 @@ def auth_headers_fixture(access_token):
         "Authorization": f"Bearer {access_token}"
     }
 
+@pytest.fixture(name="created_post")
+def create_post_fixture(client, auth_headers, post_data):
+    resp = client.post("/posts/", json=post_data, headers=auth_headers)
+    data = resp.json()
+    assert resp.status_code == 201
+    assert data["title"] == post_data["title"]
+    return data
+
 @pytest.fixture(name="post_data")
 def post_data_fixture():
     return {"title": "This is some random title, with absolutely no meaning", 
@@ -81,3 +89,19 @@ def updated_post_data_fixture():
     return {"title": "Updated title", 
             "subtitle": "Updated subs",
             "content": "NEw content!"}
+
+@pytest.fixture(name="comment_data")
+def comment_data_fixture():
+    return {"comment_text": "Test comment"}
+
+@pytest.fixture(name="updated_comment")
+def updated_comment_data_fixture():
+    return {"comment_text": "Updated comment"}
+
+@pytest.fixture(name="created_comment")
+def create_comment_fixture(client, auth_headers, created_post, comment_data):
+    id = created_post["id"]
+    resp = client.post(f"/posts/{id}/comments", json=comment_data, headers=auth_headers)
+    data = resp.json()
+    assert resp.status_code == 201
+    return data

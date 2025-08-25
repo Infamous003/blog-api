@@ -1,14 +1,3 @@
-import pytest
-
-@pytest.fixture(name="created_post")
-def create_post_fixture(client, auth_headers, post_data):
-    resp = client.post("/posts/", json=post_data, headers=auth_headers)
-    data = resp.json()
-    assert resp.status_code == 201
-    assert data["title"] == post_data["title"]
-    
-    return data
-
 def test_get_posts(client, created_post):
     response = client.get("/posts/")
     data = response.json()
