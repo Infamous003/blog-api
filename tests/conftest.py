@@ -37,8 +37,34 @@ def client_fixture(session):
     asyncio.run(app.state.redis.flushall())
 
     client = TestClient(app)
-    # for i in client.app.routes:
-    #     print(i)
-    # print("---------------------------")
     yield client
     app.dependency_overrides.clear()
+
+@pytest.fixture(name="user_data")
+def user_data_fixture():
+    return {"username": "test_user", "password": "test_password"}
+
+@pytest.fixture(name="registered_user")
+def register_user_fixture(client, user_data):
+    response = client.post("/auth/register", json=user_data)
+    data = response.json()
+    data["password"] = user_data["password"]
+
+    assert response.status_code == 201
+    yield data
+
+@pytest.fixture(name="access_token")
+def access_token_fixture(client, registered_user):
+    response = client.post("/auth/login", data={
+        "username": registered_user["username"],
+        "password": registered_user["password"]
+    })
+    assert response.status_code == 200
+    data = response.json()
+    yield data["access_token"]
+
+@pytest.fixture(name="auth_headers")
+def auth_headers_fixture(access_token):
+    return {
+        "Authorization": f"Bearer {access_token}"
+    }
