@@ -21,14 +21,13 @@ def get_password_hash(password):
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
-def get_user(username: str):
-    with Session(engine) as session:
-        query = select(User).where(User.username == username)
-        user = session.exec(query).one_or_none()
+def get_user(username: str, session: Session):
+    query = select(User).where(User.username == username)
+    user = session.exec(query).one_or_none()
 
-        if user is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
-        return user
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    return user
     
 def authenticate_user(username: str, password: str, session: Session):
     user = None
