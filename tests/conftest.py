@@ -68,3 +68,16 @@ def auth_headers_fixture(access_token):
     return {
         "Authorization": f"Bearer {access_token}"
     }
+
+@pytest.fixture(name="post_data")
+def post_data_fixture():
+    return {"title": "This is some random title, with absolutely no meaning", 
+            "subtitle": "Perhaps the subtitle explains it more?",
+            "content": "What a shame."}
+
+
+@pytest.fixture(name="updated_post")
+def updated_post_data_fixture():
+    return {"title": "Updated title", 
+            "subtitle": "Updated subs",
+            "content": "NEw content!"}
