@@ -7,12 +7,12 @@ from utils import get_post_or_404
 
 router = APIRouter(prefix="/posts", tags=["Likes"])
 
-@router.post("/{post_id}/like")
+@router.post("/{post_id}/like", status_code=status.HTTP_201_CREATED)
 def like_post(post_id: int,
          current_user: User = Depends(get_current_user),
          session: Session = Depends(get_session)):
     
-    post = get_post_or_404(post_id)
+    post = get_post_or_404(post_id, session)
     
     query = select(Like).where(Like.post_id == post.id,
                            Like.user_id == current_user.id)
@@ -26,12 +26,12 @@ def like_post(post_id: int,
         session.commit()
     return {"msg": "You liked the post"}
 
-@router.delete("/{post_id}/like")
+@router.delete("/{post_id}/like", status_code=status.HTTP_204_NO_CONTENT)
 def unlike_post(post_id: int,
                 current_user: User = Depends(get_current_user),
                 session: Session = Depends(get_session)):
     
-    post = get_post_or_404(post_id)
+    post = get_post_or_404(post_id, session)
     query = select(Like).where(Like.post_id == post.id,
                                Like.user_id == current_user.id)
     like_found = session.exec(query).one_or_none()
