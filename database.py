@@ -2,7 +2,7 @@ from sqlmodel import SQLModel, create_engine, Session
 import os
 
 # This is the postgres instance url on Render
-DATABASE_URL = "postgresql://blogapi_1cft_user:zXEvft6o6b7FqVZvaqgqzgsaoNuFvfXl@dpg-d1ufdf3uibrs738e7i50-a/blogapi_1cft"
+DATABASE_URL = "postgresql://postgres_p7zh_user:nFPyiUZ292x8X0WjghE3AEJkEQJXWd4M@dpg-d2rcdsbe5dus73d4m2k0-a/postgres_p7zh"
 
 if not DATABASE_URL:
     raise ValueError("DATABASE_URL is not set")
