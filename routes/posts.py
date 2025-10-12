@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, status, HTTPException, Request
-from models import Post, PostPublic, PostCreate, PostUpdate, User
+from models import Post, User
+from schemas.posts import PostCreate, PostPublic, PostUpdate
 from sqlmodel import Session, select
 from database import get_session
 from routes.auth import get_current_user

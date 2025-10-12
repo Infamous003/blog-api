@@ -1,7 +1,8 @@
 from fastapi import HTTPException, status, Depends, APIRouter, Request
 from sqlmodel import select, Session
 from database import get_session
-from models import User, Comment, CommentCreate, CommentPublic, CommentUpdate
+from models import User, Comment
+from schemas.comments import CommentCreate, CommentPublic, CommentUpdate
 from .auth import get_current_user
 from utils import get_post_or_404, get_comment_or_404
 import json

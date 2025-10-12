@@ -1,6 +1,8 @@
 from fastapi import Depends, HTTPException, status, APIRouter
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from models import Token, User, UserPublic, UserCreate
+from models import User
+from schemas.users import UserPublic, UserCreate
+from schemas.auth import Token
 import jwt
 from jwt.exceptions import InvalidTokenError
 from utils import authenticate_user, create_access_token, get_user, get_password_hash

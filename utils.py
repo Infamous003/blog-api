@@ -1,8 +1,9 @@
 from passlib.context import CryptContext
-from fastapi import HTTPException, status, Depends
+from fastapi import HTTPException, status
 from sqlmodel import Session, select
-from database import engine
-from models import User, Post, PostPublic, CommentPublic, Comment
+from models import User, Post, Comment
+from schemas.posts import PostPublic
+from schemas.comments import CommentPublic
 from datetime import datetime, timedelta, timezone
 import jwt
 

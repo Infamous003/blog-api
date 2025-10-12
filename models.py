@@ -1,4 +1,3 @@
-from pydantic import BaseModel
 from sqlmodel import SQLModel, Field, Relationship
 from datetime import datetime
 from sqlalchemy import Column, Text
@@ -18,25 +17,6 @@ class Post(SQLModel, table=True):
     comment: list["Comment"] = Relationship(back_populates="post")
     like: list["Like"] = Relationship(back_populates="post")
 
-class PostPublic(BaseModel):
-    id: int
-    title: str
-    subtitle: str
-    content: str
-    created_at: datetime
-    user_id: int
-    username: str
-
-class PostCreate(BaseModel):
-    title: str
-    subtitle: str | None = None
-    content: str
-
-
-class PostUpdate(BaseModel):
-    title: str | None = None
-    content: str | None = None
-    subtitle: str | None = None
 
 # User models
 
@@ -50,16 +30,6 @@ class User(SQLModel, table=True):
     comment: list["Comment"] = Relationship(back_populates="user")
     like: list["Like"] = Relationship(back_populates="user")
 
-class UserCreate(BaseModel):
-    username: str
-    password: str
-
-class UserUpdate(UserCreate):
-    pass
-
-class UserPublic(BaseModel):
-    id: int
-    username: str
 
 # Comments models
 
@@ -74,17 +44,6 @@ class Comment(SQLModel, table=True):
     post: Post = Relationship(back_populates="comment")
     user: list["User"] = Relationship(back_populates="comment")
 
-class CommentCreate(BaseModel):
-    comment_text: str
-
-class CommentUpdate(CommentCreate):
-    pass
-
-class CommentPublic(BaseModel):
-    id: int
-    comment_text: str
-    user_id: int
-
 
 # Like model
 
@@ -98,10 +57,3 @@ class Like(SQLModel, table=True):
 
     user: User = Relationship(back_populates="like")
     post: Post = Relationship(back_populates="like")
-
-
-# Authentication models
-
-class Token(BaseModel):
-    access_token: str
-    token_type: str
