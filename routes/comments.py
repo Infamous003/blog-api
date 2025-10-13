@@ -62,11 +62,12 @@ async def get_comments_for_post(post_id: int,
 @router.post("/posts/{post_id}/comments",
              status_code=status.HTTP_201_CREATED,
              response_model=CommentPublic)
-def create_comment(post_id: int,
+async def create_comment(post_id: int,
                    comment: CommentCreate,
+                   request: Request,
                    current_user: User = Depends(get_current_user),
                    session: Session = Depends(get_session)):
-    
+    redis = request.app.state.redis
     post = get_post_or_404(post_id, session)
     
     new_comment = Comment(**comment.model_dump())
@@ -77,18 +78,20 @@ def create_comment(post_id: int,
     session.commit()
     session.refresh(new_comment)
 
+    await redis.delete("comments")
     return new_comment
     
 
 @router.put("/posts/{post_id}/comments/{comment_id}",
             status_code=status.HTTP_200_OK,
             response_model=CommentPublic)
-def update_comment(post_id: int,
+async def update_comment(post_id: int,
                    comment_id: int,
                    comment: CommentUpdate,
+                   request: Request,
                    current_user: User = Depends(get_current_user),
                    session: Session = Depends(get_session)):
-
+    redis = request.app.state.redis
     comment_found = get_comment_or_404(comment_id, post_id, session)
 
     if comment_found.user_id != current_user.id:
@@ -99,16 +102,19 @@ def update_comment(post_id: int,
     session.add(comment_found)
     session.commit()
     session.refresh(comment_found)
+
+    await redis.delete("comments")
     return comment_found
     
 
 @router.delete("/posts/{post_id}/comments/{comment_id}",
                status_code=status.HTTP_204_NO_CONTENT)
-def delete_comment(post_id: int,
+async def delete_comment(post_id: int,
                    comment_id: int,
+                   request: Request,
                    current_user: User = Depends(get_current_user),
                    session: Session = Depends(get_session)):
-    
+    redis = request.app.state.redis
     comment_found = get_comment_or_404(comment_id, post_id, session)
 
     if comment_found is None:
@@ -119,3 +125,5 @@ def delete_comment(post_id: int,
     
     session.delete(comment_found)
     session.commit()
+
+    await redis.delete("comments")
