@@ -8,10 +8,14 @@ from jwt.exceptions import InvalidTokenError
 from utils import authenticate_user, create_access_token, get_user, get_password_hash
 from sqlmodel import Session, select
 from database import get_session
+import os
+from dotenv import load_dotenv
 
-SECRET_KEY = "72a29ca393337573268c0c33b2df524037a40ce0d7b286ef0114d3a83f08e8d2"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 1
+load_dotenv()
+
+SECRET_KEY = os.getenv("SECRET_KEY")
+ALGORITHM = os.getenv("ALGORITHM")
+ACCESS_TOKEN_EXPIRE_MINUTES = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
